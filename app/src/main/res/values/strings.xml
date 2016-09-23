@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Kii Data Retrieval</string>
+
+    <!-- Main Screen -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+
+    <!-- Login Screen -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+</resources>
