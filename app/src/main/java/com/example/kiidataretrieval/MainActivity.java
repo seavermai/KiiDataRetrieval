@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.example.kiidataretrieval.kiiobject.Config;
 import com.example.kiidataretrieval.login.LoginFragment;
+import com.example.kiidataretrieval.util.ProgressDialogFragment;
 import com.example.kiidataretrieval.util.ViewUtil;
 import com.kii.cloud.storage.*;
 import com.kii.cloud.storage.callback.KiiUserCallBack;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         // check access token
         String token = Pref.getStoredAccessToken(getApplicationContext());
         if (TextUtils.isEmpty(token)) {
-            showTitlePage();
+            showLoginPage();
             return;
         }
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 // error check
                 if (e != null) {
                     // go to normal login
-                    showTitlePage();
+                    showLoginPage();
                     return;
                 }
                 // login is succeeded then go to List Fragment
@@ -69,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Show title fragment
+     * Show login fragment
      */
-    public void showTitlePage() {
+    public void showLoginPage() {
         ViewUtil.toNextFragment(getSupportFragmentManager(), LoginFragment.newInstance(), false);
     }
 

@@ -12,7 +12,9 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import com.example.kiidataretrieval.Pref;
 import com.example.kiidataretrieval.R;
+import com.example.kiidataretrieval.util.ViewUtil;
 import com.kii.cloud.storage.KiiUser;
 
 /**

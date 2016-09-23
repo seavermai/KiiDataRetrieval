@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +27,12 @@ import butterknife.OnClick;
 /**
  * This dialog shows user registration form
  */
-public class LoginDialogFragment extends DialogFragment {
+public class RegistrationDialogFragment extends DialogFragment {
+    private static final String TAG = "RegistrationDialog";
+
     private static final String MESSAGE_INVALID_USERNAME = "Invalid Username";
     private static final String MESSAGE_INVALID_PASSWORD = "Invalid Password";
-    private static final String MESSAGE_LOGIN_FAILED = "Login is failed.";
+    private static final String MESSAGE_REGISTRATION_FAILED = "Registration is failed.";
 
     @Bind(R.id.text_message)
     TextView mMessageText;
@@ -43,8 +46,8 @@ public class LoginDialogFragment extends DialogFragment {
     @Bind(R.id.button_submit)
     Button mSubmitButton;
 
-    public static LoginDialogFragment newInstance(Fragment target, int requestCode) {
-        LoginDialogFragment fragment = new LoginDialogFragment();
+    public static RegistrationDialogFragment newInstance(Fragment target, int requestCode) {
+        RegistrationDialogFragment fragment = new RegistrationDialogFragment();
         fragment.setTargetFragment(target, requestCode);
 
         Bundle args = new Bundle();
@@ -52,14 +55,15 @@ public class LoginDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_login_dialog, container, false);
+        View root = inflater.inflate(R.layout.fragment_registration_dialog, container, false);
 
         ButterKnife.bind(this, root);
 
         // set text
-        mSubmitButton.setText(R.string.login);
+        mSubmitButton.setText(R.string.register);
 
         return root;
     }
@@ -75,7 +79,7 @@ public class LoginDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.setTitle(R.string.login_kii_cloud);
+        dialog.setTitle(R.string.register_kii_cloud);
         return dialog;
     }
 
@@ -94,20 +98,21 @@ public class LoginDialogFragment extends DialogFragment {
             showErrorMessage(MESSAGE_INVALID_PASSWORD);
             return;
         }
-
         // show progress
-        ProgressDialogFragment progress = ProgressDialogFragment.newInstance(getActivity(), R.string.login, R.string.login);
+        ProgressDialogFragment progress = ProgressDialogFragment.newInstance(getActivity(), R.string.register, R.string.register);
         progress.show(getFragmentManager(), ProgressDialogFragment.FRAGMENT_TAG);
 
-        // call user login API
-        KiiUser.logIn(new KiiUserCallBack() {
+        // call user registration API
+        KiiUser user = KiiUser.builderWithName(username).build();
+        user.register(new KiiUserCallBack() {
             @Override
-            public void onLoginCompleted(int token, KiiUser user, Exception e) {
-                super.onLoginCompleted(token, user, e);
-
+            public void onRegisterCompleted(int token, KiiUser user, Exception e) {
+                super.onRegisterCompleted(token, user, e);
                 ProgressDialogFragment.hide(getFragmentManager());
+
                 if (e != null) {
-                    showErrorMessage(MESSAGE_LOGIN_FAILED);
+                    Log.e(TAG, "Register completed error", e);
+                    showErrorMessage(MESSAGE_REGISTRATION_FAILED);
                     return;
                 }
 
@@ -120,14 +125,14 @@ public class LoginDialogFragment extends DialogFragment {
                 target.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
                 dismiss();
             }
-        }, username, password);
+        }, password);
     }
 
     /**
      * Show error message
      * @param message is error message
      */
-    void showErrorMessage(String message) {
+    private void showErrorMessage(String message) {
         if (mMessageText == null) { return; }
 
         mMessageText.setVisibility(View.VISIBLE);
